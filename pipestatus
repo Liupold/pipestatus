@@ -35,13 +35,15 @@ get_data(){
 }
 
 echo "$TEMPLATE"
-while read -r data; do
-        tmp_state="$TEMPLATE"
-        for key in $KEYS; do
-                [ "${data#$key:}" != "$data" ] && add_data "$key" "$data"
-                key_data="$(get_data "$key")" || continue
-                tmp_state_l="${tmp_state%%<$key>*}"; tmp_state_r="${tmp_state##*<$key>}"
-                tmp_state="${tmp_state_l}${key_data}${tmp_state_r}"
-        done
-        echo "$tmp_state"
-done < "$PIPESTATUS_PIPE"
+while true; do
+        while read -r data; do
+                tmp_state="$TEMPLATE"
+                for key in $KEYS; do
+                        [ "${data#$key:}" != "$data" ] && add_data "$key" "$data"
+                        key_data="$(get_data "$key")" || continue
+                        tmp_state_l="${tmp_state%%<$key>*}"; tmp_state_r="${tmp_state##*<$key>}"
+                        tmp_state="${tmp_state_l}${key_data}${tmp_state_r}"
+                done
+                echo "$tmp_state"
+        done < "$PIPESTATUS_PIPE"
+done
