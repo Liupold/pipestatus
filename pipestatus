@@ -1,6 +1,4 @@
 #!/bin/sh
-# Modular Lemon Bar. (When life gives you lemon, make modules).
-# shellcheck disable=SC2034,SC2016
 rand="$(openssl rand -hex 4)"
 lmbar_pipe="/tmp/lmbar.pipe"
 TEMPLATE="$1"
