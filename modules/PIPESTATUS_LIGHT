@@ -1,0 +1,8 @@
+#!/bin/sh
+brightness="$(cat /sys/class/backlight/*?/brightness)"
+printf "%s%.2f\n" "LIGHT:" "$(echo "$brightness/2.55" | bc -l)"
+inotifywait -m -e MODIFY /sys/class/backlight/*?/brightness --format "%w" 2>/dev/null \
+        | while read -r event; do
+        read -r brightness < "${event}"
+        printf "%s%.2f\n" "LIGHT:" "$(echo "$brightness/2.55" | bc -l)"
+done

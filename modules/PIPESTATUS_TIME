@@ -1,0 +1,5 @@
+#!/bin/sh
+while true; dp
+        date +TIME:%H:%M
+        sleep 1m
+done

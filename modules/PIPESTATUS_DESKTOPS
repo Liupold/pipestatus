@@ -1,0 +1,40 @@
+#!/bin/sh
+desktops=" 1 2 3 4 5 6 7 8 9 10 "
+get_nth_desk(){
+        n="$1"; nth_desktop="$desktops"
+        for _ in $(seq 0 "$n"); do
+                nth_desktop="${nth_desktop#* }"
+        done
+        echo " ${nth_desktop%% *} "
+}
+
+get_occupied(){
+        unset desk
+        clients="$(xprop -root _NET_CLIENT_LIST)"
+        occupied_desk=""
+
+        for client in ${clients#* \#* }; do
+                desk="$(xprop -notype -id "${client%,}" _NET_WM_DESKTOP)"
+                desk="${desk##* }"
+                [ "${occupied_desk#*$desk}" = "$occupied_desk" ] \
+                        && occupied_desk="$occupied_desk $desk"
+        done
+        echo "${occupied_desk# }"
+}
+
+xprop -notype -spy -root _NET_CURRENT_DESKTOP | while read -r event; do
+        f_desk="${event##* }"; o_desk=" $(get_occupied) "
+        [ "${o_desk#* $f_desk }" = "$o_desk" ] && o_desk="$o_desk $f_desk "
+        all_desk=""
+        for i in $(seq 0 10); do
+                [ "${o_desk#* $i }" != "$o_desk" ] && {
+                        if [ "$i" = "$f_desk" ]; then
+                                all_desk="$all_desk %{+u}%{R}$(get_nth_desk "$i")%{-u}%{R}"
+                        else
+                                all_desk="$all_desk $(get_nth_desk "$i")"
+                        fi
+                }
+        done
+        echo "DESKTOPS:${all_desk# }"
+done
+

@@ -1,0 +1,12 @@
+#!/bin/sh
+top -b -d 3 -u "$USER" | while read -r top_line;
+do
+        [ "${top_line# }" != "$top_line" ]
+        if [ "${top_line#%Cpu(s)}" != "$top_line" ]; then
+                cpu_per="${top_line%% us,*}"; cpu_per="${cpu_per#%Cpu(s):}"
+                echo "CPU:${cpu_per##* }"
+        elif [ "${top_line#MiB Mem}" != "$top_line" ]; then
+                mem_mb="${top_line##*free,}"; mem_mb="${mem_mb%% used,*}"
+                echo "MEM:${mem_mb##* }"
+        fi
+done

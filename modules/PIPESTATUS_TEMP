@@ -1,0 +1,6 @@
+#!/bin/sh
+while true; do
+        cpu_temp="$(sensors)"; cpu_temp="${cpu_temp#*Tdie*+}"
+        echo "TEMP:${cpu_temp%% *}"
+        sleep 5
+done

@@ -1,0 +1,49 @@
+#!/bin/sh
+# Modular Lemon Bar. (When life gives you lemon, make modules).
+# shellcheck disable=SC2034,SC2016
+rand="$(openssl rand -hex 4)"
+lmbar_pipe="/tmp/lmbar.pipe"
+TEMPLATE="$1"
+KEYS=""; DATA=""
+
+[ -z "$TEMPLATE" ] && echo "USEAGE: lmbar <TEMPLATE>" && exit 1
+
+# shellcheck disable=SC2064
+trap "rm -f $lmbar_pipe; exit \$?" EXIT HUP INT # trap for delete pipe
+[ ! -p "$lmbar_pipe" ] && mkfifo "$lmbar_pipe" # make pipe
+
+tmp="$TEMPLATE"
+while true; do
+         [ "${tmp#*<}" = "$tmp" ] || [ "${tmp#*>}" = "$tmp" ] && break
+         key=${tmp#*<}; key="${key%%>*}"
+         KEYS="$KEYS $key"; tmp="${tmp#*<$key>}"
+done
+KEYS="${KEYS# }"; unset tmp
+
+add_data(){
+        unset _key _data; _key="${rand}-$1"; _data="$2"
+        [ "${DATA#*<$_key>}" != "$DATA" ] && {
+                DATA_L="${DATA%%<$_key>*}"; DATA_R="${DATA##*</$_key>}"
+                DATA="${DATA_L}${DATA_R}"
+        }
+        DATA="$DATA<$_key>${_data#$1:}</$_key>"
+}
+
+get_data(){
+        unset _key _data; _key="${rand}-$1";
+        [ "${DATA#*<$_key>}" = "$DATA" ] && return 1
+        _data="${DATA#*<$_key>}"
+        echo "${_data%</$_key>*}"
+}
+
+echo "$TEMPLATE"
+while read -r data; do
+        tmp_state="$TEMPLATE"
+        for key in $KEYS; do
+                [ "${data#$key:}" != "$data" ] && add_data "$key" "$data"
+                key_data="$(get_data "$key")" || continue
+                tmp_state_l="${tmp_state%%<$key>*}"; tmp_state_r="${tmp_state##*<$key>}"
+                tmp_state="${tmp_state_l}${key_data}${tmp_state_r}"
+        done
+        echo "$tmp_state"
+done < "$lmbar_pipe"

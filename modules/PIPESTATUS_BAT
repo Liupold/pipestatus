@@ -1,0 +1,23 @@
+#!/bin/sh
+plug=""
+discharging=""
+
+bat_status(){
+        bat_info=""
+        for bat in /sys/class/power_supply/BAT*?; do
+                read -r energy_full < "$bat/energy_full"
+                read -r energy_now < "$bat/energy_now"
+                read -r bat_status < "$bat/status"
+                [ "${bat_status?}" = "Full" ] || [ "${bat_status?}" = "Charging" ] \
+                        && bat_info="$bat_info $plug"
+                [ "${bat_status?}" = "Discharging" ] && bat_info="$bat_info $discharging"
+                [ "${bat_status?}" = "Unknown" ] && bat_info="$bat_info $discharging"
+                bat_info="${bat_info} $(( energy_now * 100 / energy_full ))"
+        done
+}
+
+bat_status; echo "BAT:${bat_info# }"
+while true; do
+        inotifywait -e OPEN /sys/class/power_supply/*?/energy_now >/dev/null 2>&1
+        bat_status; echo "BAT:${bat_info# }"
+done
