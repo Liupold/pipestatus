@@ -1,14 +1,14 @@
 #!/bin/sh
 rand="$(openssl rand -hex 4)"
-lmbar_pipe="/tmp/lmbar.pipe"
+[ -z "$PIPESTATUS_PIPE" ] && PIPESTATUS_PIPE="/tmp/pipestatus.pipe"
 TEMPLATE="$1"
 KEYS=""; DATA=""
 
-[ -z "$TEMPLATE" ] && echo "USEAGE: lmbar <TEMPLATE>" && exit 1
+[ -z "$TEMPLATE" ] && echo "USEAGE: pipestatus <TEMPLATE>" && exit 1
 
 # shellcheck disable=SC2064
-trap "rm -f $lmbar_pipe; exit \$?" EXIT HUP INT # trap for delete pipe
-[ ! -p "$lmbar_pipe" ] && mkfifo "$lmbar_pipe" # make pipe
+trap "rm -f $PIPESTATUS_PIPE; exit \$?" EXIT HUP INT # trap for delete pipe
+[ ! -p "$PIPESTATUS_PIPE" ] && mkfifo "$PIPESTATUS_PIPE" # make pipe
 
 tmp="$TEMPLATE"
 while true; do
@@ -44,4 +44,4 @@ while read -r data; do
                 tmp_state="${tmp_state_l}${key_data}${tmp_state_r}"
         done
         echo "$tmp_state"
-done < "$lmbar_pipe"
+done < "$PIPESTATUS_PIPE"

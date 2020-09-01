@@ -1,5 +1,5 @@
 #!/bin/sh
-top -b -E g -u "$USER" | while read -r top_line;
+top -b -d 3 -E g -u "$USER" | while read -r top_line;
 do
         [ "${top_line# }" != "$top_line" ] && continue
         if [ "${top_line#%Cpu(s)}" != "$top_line" ]; then
