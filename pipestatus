@@ -1,14 +1,12 @@
 #!/bin/sh
-rand="$(openssl rand -hex 4)"
 [ -z "$PIPESTATUS_PIPE" ] && PIPESTATUS_PIPE="/tmp/pipestatus.pipe"
-TEMPLATE="$1"
-KEYS=""; DATA=""
+trap 'rm -f $PIPESTATUS_PIPE; exit $?' EXIT HUP INT # trap for delete pipe
+[ ! -p "$PIPESTATUS_PIPE" ] && mkfifo "$PIPESTATUS_PIPE" # make pipe
+
+rand="kjqhri813y"; TEMPLATE="$1"
 
 [ -z "$TEMPLATE" ] && echo "USEAGE: pipestatus <TEMPLATE>" && exit 1
-
-# shellcheck disable=SC2064
-trap "rm -f $PIPESTATUS_PIPE; exit \$?" EXIT HUP INT # trap for delete pipe
-[ ! -p "$PIPESTATUS_PIPE" ] && mkfifo "$PIPESTATUS_PIPE" # make pipe
+echo "$TEMPLATE"
 
 tmp="$TEMPLATE"
 while true; do
@@ -18,31 +16,43 @@ while true; do
 done
 KEYS="${KEYS# }"; unset tmp
 
+replace_string() {
+        result_string="$1"; marker="$2"; target="$3"
+        [ "$target" = "$marker" ] && return 1
+        while true;
+        do
+                right_=${result_string#*$marker}
+                [ "$right_" = "$result_string" ] && break
+                left_=${result_string%%$marker*}
+                result_string="${left_}${target}${right_}"
+        done
+}
+
+get_data(){
+        unset _data result_string; _key="${rand}-$1";
+        [ "${DATA#*<$_key>}" = "${DATA}" ] && return 1
+        _data="${DATA#*<$_key>}"
+        result_string="${_data%</$_key>*}"
+}
+
 add_data(){
-        unset _key _data; _key="${rand}-$1"; _data="$2"
+        _key="${rand}-$1"; _data="$2"
         [ "${DATA#*<$_key>}" != "$DATA" ] && {
                 DATA_L="${DATA%%<$_key>*}"; DATA_R="${DATA##*</$_key>}"
                 DATA="${DATA_L}${DATA_R}"
         }
         DATA="$DATA<$_key>${_data#$1:}</$_key>"
+        result_string="${_data#$1:}"
 }
 
-get_data(){
-        unset _key _data; _key="${rand}-$1";
-        [ "${DATA#*<$_key>}" = "$DATA" ] && return 1
-        _data="${DATA#*<$_key>}"
-        echo "${_data%</$_key>*}"
-}
-
-echo "$TEMPLATE"
 while true; do
         while read -r data; do
                 tmp_state="$TEMPLATE"
                 for key in $KEYS; do
                         [ "${data#$key:}" != "$data" ] && add_data "$key" "$data"
-                        key_data="$(get_data "$key")" || continue
-                        tmp_state_l="${tmp_state%%<$key>*}"; tmp_state_r="${tmp_state##*<$key>}"
-                        tmp_state="${tmp_state_l}${key_data}${tmp_state_r}"
+                        get_data "$key"
+                        replace_string "$tmp_state" "<$key>" "$result_string"
+                        tmp_state="$result_string"
                 done
                 echo "$tmp_state"
         done < "$PIPESTATUS_PIPE"

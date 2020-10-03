@@ -1,0 +1,21 @@
+#!/bin/sh
+trayer --edge top --align right --widthtype request --height 20 --tint 000000 --transparent true --expand true --SetDockType true --alpha 0 &
+
+while true; do sleep 0.1; xprop -name 'panel' >/dev/null 2>&1 && break; done
+
+draw_space() {
+        n="$1"; tmp=""
+        for _ in $(seq 1 "$n");
+        do
+                tmp="${tmp} "
+        done
+        [ -z "$tmp" ] && xdo resize -w 5 -a 'panel'
+        echo "TRAYER:$tmp."
+}
+
+xprop -notype -spy -name 'panel' WM_NORMAL_HINTS | while read -r event; do
+         size="${event#program specified minimum size: }"
+         [ "$size" = "$event" ] && continue
+         width="${size% by*}"
+         draw_space "$((width / 10))"
+done

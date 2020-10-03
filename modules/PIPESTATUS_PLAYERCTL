@@ -1,12 +1,5 @@
 #!/bin/sh
 echo "PLAYERCTL:"
- playerctl -i chromium,kdeconnect.mpris -F metadata --format '{{status}} {{playerName}}: {{title}} [{{duration(position)}}/{{duration(mpris:length)}}]' | while read -r data; do
-        if [ "${data#Playing}" != "$data" ]; then
-                data=" ${data#Playing}"
-        elif [ "${data#Paused}" != "$data" ]; then
-                data=" ${data#Paused}"
-        else
-                data="${data#* }"
-        fi
+ playerctl -i chromium,kdeconnect.mpris -F metadata --format '{{playerName}}: {{title}} [{{duration(position)}}/{{duration(mpris:length)}}]' | while read -r data; do
         echo "PLAYERCTL:$data"
 done
