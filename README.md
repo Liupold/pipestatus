@@ -4,7 +4,7 @@
 While using minimal status bar like (`dwm`'s bar , `lemonbar`). They generally display a text passed to them. (Very minimal by design). But generating that is a *pain in the behind*. Specially if they must dynamically update like `volume`, `brightness` etc, one way to do so is by writting a very big `while loop` (or dividing it into scripts), This create additional dynamic updates which is for all intense and purposes is not very effective. Moreover when the bar updates (generally) every value is also updated, which is a bloat.
 
    - ### what if i use a way to subscribe to a change?
-        well yes that's a solution but manging a lot of look and hooks can be intemidating. Can there be a better way?
+        well yes that's a solution but manging a lot of loops and hooks can be intemidating. Can there be a better way?
 
 # - The Solution
 
