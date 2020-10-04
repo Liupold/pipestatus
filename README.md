@@ -25,7 +25,7 @@ echo "KEY1:value1" > /tmp/pipestatus.pipe; echo "KEY2:value2" > /tmp/pipestatus.
 or
 
 ```
-printf KEY1:value1\nKEY2:value2" > /tmp/pipestatus.pipe
+printf "KEY1:value1\nKEY2:value2\n" > /tmp/pipestatus.pipe
 ```
 
 * Each update is separate from one another.
