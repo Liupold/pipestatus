@@ -4,5 +4,5 @@ while true; do
         cpu_temp="${cpu_temp#*Tdie*-}"
         [ "$prev_temp" != "$cpu_temp" ] && \
                 prev_temp="$cpu_temp" && echo "TEMP:${cpu_temp%% *}"
-        sleep 1m
+        sleep 2
 done

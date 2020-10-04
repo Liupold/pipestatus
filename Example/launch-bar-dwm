@@ -1,0 +1,23 @@
+#!/bin/sh
+# shellcheck disable=SC1090
+export PIPESTATUS_PIPE="/tmp/dmbar"
+MODULE_PATH="./modules/"
+
+padding="                                               "
+# shellcheck disable=SC2064
+trap "trap - SIGTERM && kill -- -$$" INT EXIT HUP
+# TEMPLATE="${TEMPLATE}<PLAYERCTL>   "
+TEMPLATE="${TEMPLATE} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>  <TIME>"
+# TEMPLATE="${TEMPLATE}<TRAYER>"
+
+# shellcheck disable=SC2154
+./pipestatus "$TEMPLATE" |  while read -r bar_info; do
+        xsetroot -name "$padding$bar_info"
+done &
+
+while true; do sleep 0.1; [ -p "$PIPESTATUS_PIPE" ] && break; done
+MODULES_TO_LOAD="NET_SPEED PULSE TOP TIME LIGHT BAT"
+for module in $MODULES_TO_LOAD; do
+        sh "$MODULE_PATH/PIPESTATUS_$module" > "$PIPESTATUS_PIPE" &
+done
+wait

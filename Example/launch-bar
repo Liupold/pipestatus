@@ -1,0 +1,28 @@
+#!/bin/sh
+# shellcheck disable=SC1090
+export PIPESTATUS_PIPE="/tmp/lmbar"
+MODULE_PATH="./modules"
+. "$LUNA_COLOR_PATH/colors.sh" # pywal colors
+
+# shellcheck disable=SC2064
+trap "trap - SIGTERM && kill -- -$$" INT EXIT HUP
+TEMPLATE="%{l}<DESKTOPS> "
+TEMPLATE="${TEMPLATE}%{c}<PLAYERCTL>"
+TEMPLATE="${TEMPLATE}%{r} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>  <TIME>"
+TEMPLATE="${TEMPLATE}<TRAYER>"
+
+# shellcheck disable=SC2154
+./pipestatus "$TEMPLATE" | lemonbar \
+        -o 0 -f 'Fira Code'-10 \
+        -o -3 -f 'Font Awesome 5 Free Solid'-10 \
+        -B "#aa${background#\#}" -F "#ff${foreground#\#}" \
+        -g '1920x25+0+0' | /bin/zsh &
+
+while true; do sleep 0.1; xprop -name 'bar' >/dev/null 2>&1 && break; done
+while true; do sleep 0.1; [ -p "$PIPESTATUS_PIPE" ] && break; done
+
+MODULES_TO_LOAD="NET_SPEED PULSE PLAYERCTL TOP DESKTOPS TIME LIGHT BAT TRAYER"
+for module in $MODULES_TO_LOAD; do
+        sh "$MODULE_PATH/PIPESTATUS_$module" > "$PIPESTATUS_PIPE" &
+done
+wait
