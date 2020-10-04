@@ -58,6 +58,6 @@ To run a exmple you need to copy the script from `Example` to pipestatus's folde
 ```bash
 mv Example/launch-bar ./ # lemmonbar
 ```
-Feel free to sugest ides, and PR. (or submit patch)
+Feel free to sugest ideas, PR. (or submit patch)
 
-Email: <mail:rohnch@protonmail.ch>
+mail:rohnch@protonmail.ch
