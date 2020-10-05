@@ -1,20 +1,32 @@
 #!/bin/sh
-[ -z "$PIPESTATUS_PIPE" ] && PIPESTATUS_PIPE="/tmp/pipestatus.pipe"
+usage="pipestatus (status generator using pipes)
+
+||status||
+
+pipestatus [OPTION ...]
+
+OPTIONS:
+        -h  --help              Show this message
+        -v  --verbose           Shows useful information.
+        -d  --default           default bar value. (when no key is set).
+        -e  --exec              Chain load cmd. (This str get executed after bar init).
+
+bugs/issues: https://github.com/liupold/pipestatus."
+
+PIPESTATUS_PIPE="${PIPESTATUS_PIPE:-"/tmp/pipestatus.pipe"}"
 trap 'rm -f $PIPESTATUS_PIPE; exit $?' EXIT HUP INT # trap for delete pipe
 [ ! -p "$PIPESTATUS_PIPE" ] && mkfifo "$PIPESTATUS_PIPE" # make pipe
+rand="kjqhri813y"
 
-rand="kjqhri813y"; TEMPLATE="$1"
-
-[ -z "$TEMPLATE" ] && echo "USEAGE: pipestatus <TEMPLATE>" && exit 1
-echo "$TEMPLATE"
-
-tmp="$TEMPLATE"
-while true; do
-         [ "${tmp#*<}" = "$tmp" ] || [ "${tmp#*>}" = "$tmp" ] && break
-         key=${tmp#*<}; key="${key%%>*}"
-         KEYS="$KEYS $key"; tmp="${tmp#*<$key>}"
-done
-KEYS="${KEYS# }"; unset tmp
+get_keys() {
+        tmp="$TEMPLATE"
+        while true; do
+                 [ "${tmp#*<}" = "$tmp" ] || [ "${tmp#*>}" = "$tmp" ] && break
+                 key=${tmp#*<}; key="${key%%>*}"
+                 KEYS="$KEYS $key"; tmp="${tmp#*<$key>}"
+        done
+        KEYS="${KEYS# }"; unset tmp
+}
 
 replace_string() {
         result_string="$1"; marker="$2"; target="$3"
@@ -45,7 +57,8 @@ add_data(){
         result_string="${_data#$1:}"
 }
 
-while true; do
+main_loop() {
+        while true; do
         while read -r data; do
                 tmp_state="$TEMPLATE"
                 for key in $KEYS; do
@@ -56,4 +69,35 @@ while true; do
                 done
                 echo "$tmp_state"
         done < "$PIPESTATUS_PIPE"
+        done
+}
+
+TEMP=$(getopt -o 'vhe:d:' --long \
+        'verbose,help,exec:,default:' -n 'pipestatus' -- "$@")
+
+eval set -- "${TEMP}"
+while true; do
+        case "$1" in
+                '-v'|'--verbose')
+                        set -x;
+                        shift; continue;;
+                '-h'|'--help')
+                        echo "$usage" && exit $?;
+                        shift; continue;;
+                '-e'|'--exec')
+                        to_exec="$2"
+                        shift 2; continue;;
+                '-d'|'--default')
+                        default_str="$2"
+                        shift 2; continue;;
+                '--')
+                        shift; break;;
+                *)
+                        shift; continue;;
+        esac
 done
+
+TEMPLATE="$1"; [ -z "$TEMPLATE" ] && echo "$usage" && exit 1
+[ -z "$default_str" ]  && default_str="$TEMPLATE"; echo "$default_str"
+[ -n "$to_exec" ] && echo "$to_exec" | /bin/sh &
+get_keys && main_loop
