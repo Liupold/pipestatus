@@ -1,0 +1,8 @@
+#!/bin/sh
+PIPESTATUS_PIPE="${PIPESTATUS_PIPE:-"/tmp/pipestatus.pipe"}"
+# shellcheck disable=SC2064
+trap "trap - SIGTERM && kill -- -$$" INT EXIT HUP
+for module in "$@"; do
+        sh "$MODULE_PATH/PIPESTATUS_$module" > "$PIPESTATUS_PIPE" &
+done
+wait
