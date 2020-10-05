@@ -1,5 +1,23 @@
 # Simple status line generator. (pipestatus)
 
+```
+___  _ ___  ____ ____ ___ ____ ___ _  _ ____
+|__] | |__] |___ [__   |  |__|  |  |  | [__
+|    | |    |___ ___]  |  |  |  |  |__| ___] |status generator using pipes|
+
+pipestatus [OPTION ...] TEMPLATE
+
+OPTIONS:
+        -h  --help              Show this message
+        -v  --verbose           Shows useful information.
+        -d  --default {string}  default bar value. (when *NO* key is set).
+        -e  --exec {string}     Chain load cmd. (This str get executed after bar init).
+
+bugs/issues: https://github.com/liupold/pipestatus.
+```
+
+
+
 # - The Problem
 While using minimal status bar like (`dwm`'s bar , `lemonbar`). They generally display a text passed to them. (Very minimal by design). But generating that is a *pain in the behind*. Specially if they must dynamically update like `volume`, `brightness` etc, one way to do so is by writting a very big `while loop` (or dividing it into scripts), This create additional dynamic updates which is for all intense and purposes is not very effective. Moreover when the bar updates (generally) every value is also updated, which is a bloat.
 

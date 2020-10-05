@@ -1,17 +1,17 @@
 #!/bin/sh
-usage="pipestatus (status generator using pipes)
+usage='___  _ ___  ____ ____ ___ ____ ___ _  _ ____
+|__] | |__] |___ [__   |  |__|  |  |  | [__
+|    | |    |___ ___]  |  |  |  |  |__| ___] |status generator using pipes|
 
-||status||
-
-pipestatus [OPTION ...]
+pipestatus [OPTION ...] TEMPLATE
 
 OPTIONS:
         -h  --help              Show this message
         -v  --verbose           Shows useful information.
-        -d  --default           default bar value. (when no key is set).
-        -e  --exec              Chain load cmd. (This str get executed after bar init).
+        -d  --default {string}  default bar value. (when *NO* key is set).
+        -e  --exec {string}     Chain load cmd. (This str get executed after bar init).
 
-bugs/issues: https://github.com/liupold/pipestatus."
+bugs/issues: https://github.com/liupold/pipestatus.'
 
 PIPESTATUS_PIPE="${PIPESTATUS_PIPE:-"/tmp/pipestatus.pipe"}"
 trap 'rm -f $PIPESTATUS_PIPE; exit $?' EXIT HUP INT # trap for delete pipe
