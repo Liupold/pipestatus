@@ -1,0 +1,17 @@
+#!/bin/sh
+export PIPESTATUS_PIPE="/tmp/testbar"
+export MODULE_PATH="./modules"
+
+TEMPLATE="%{l}<DESKTOPS> "
+TEMPLATE="${TEMPLATE}%{c}<PLAYERCTL>"
+TEMPLATE="${TEMPLATE}%{r} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>  <TIME>"
+# TEMPLATE="${TEMPLATE}<TRAYER>"
+MODULES_TO_LOAD="NET_SPEED PULSE PLAYERCTL TOP DESKTOPS TIME LIGHT BAT"
+
+pipestatus "$TEMPLATE" --exec "sh $MODULE_PATH/load $MODULES_TO_LOAD" | lemonbar \
+        -o 0 -f 'Fira Code'-10 \
+        -o -3 -f 'Font Awesome 5 Free Solid'-10 \
+        -B "#aa000000" -F "#ffffffff" \
+        -g '1920x25+0+0'
+
+

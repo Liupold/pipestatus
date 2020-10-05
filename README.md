@@ -51,11 +51,14 @@ It's recommend to change the `named pipe` file name by setting a `env` while lau
 export PIPESTATUS_PIPE="/tmp/my_pipe" # or what ever you want.
 ```
 
-A sample implimentation of using this in `dwm's bar` can be found in the `Example`dir.
+A sample implimentation of using this in `dwm's bar` and `lemonbar` can be found in the `Example`dir.
 To run a exmple you need to have `Font Awesome` and `Fira Code` Fonts.
 
 ```bash
 ./Example/launch-bar-dwm
+```
+```bash
+./Example/launch-lemonbar
 ```
 
 mail:rohnch@protonmail.ch
