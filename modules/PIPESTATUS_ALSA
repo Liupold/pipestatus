@@ -1,0 +1,9 @@
+#!/bin/sh
+tmp="$(amixer sget Master)" && tmp=${tmp#*\[} && echo "VOL:${tmp%%\]*}"
+echo "VOL_SYM:"
+stdbuf -oL alsactl monitor | while read -r event; do
+        [ "$event" != "${event#*Volume}" ] && \
+                tmp="$(amixer sget Master)" && tmp=${tmp#*\[} && echo "VOL:${tmp%%\]*}"
+        [ "${event#*Speaker Playback Switch}" != "$event" ] && echo "VOL_SYM:"
+        [ "${event#*Headphone Playback Switch}" != "$event" ] && echo "VOL_SYM:"
+done
