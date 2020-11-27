@@ -1,0 +1,12 @@
+#!/bin/sh
+export PIPESTATUS_PIPE="/tmp/testbar"
+export MODULE_PATH="./modules"
+padding="                                               "
+TEMPLATE="${TEMPLATE} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>"
+TEMPLATE="${TEMPLATE}  <TIME>"
+MODULES_TO_LOAD="NET_SPEED PULSE TOP TIME LIGHT BAT"
+
+pipestatus "$TEMPLATE" --exec "sh $MODULE_PATH/load $MODULES_TO_LOAD" |  while read -r bar_info; do
+        xsetroot -name "$padding$bar_info"
+done
+
