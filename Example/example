@@ -3,6 +3,6 @@ export PIPESTATUS_PIPE="/tmp/testbar"
 export MODULE_PATH="./modules"
 TEMPLATE="${TEMPLATE} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>"
 TEMPLATE="${TEMPLATE}  <TIME>"
-MODULES_TO_LOAD="NET_SPEED PULSE TOP TIME LIGHT BAT"
 
-pipestatus "$TEMPLATE" --exec "sh $MODULE_PATH/load $MODULES_TO_LOAD"
+pipestatus -t "$TEMPLATE" -f "/tmp/testbar"
+# echo "CPU:cccppppppuuuuu!!!!!" > /tmp/testbar

@@ -1,12 +1,16 @@
 #!/bin/sh
-export PIPESTATUS_PIPE="/tmp/testbar"
-export MODULE_PATH="./modules"
+export PIPESTATUS_PIPE="/tmp/dwmbar"
 padding="                                               "
+TEMPLATE="${TEMPLATE}<CMUS> "
 TEMPLATE="${TEMPLATE} <CPU>  <MEM> <NET_SPEED>  <LIGHT> <VOL_SYM> <VOL> <BAT>"
-TEMPLATE="${TEMPLATE}  <TIME>"
-MODULES_TO_LOAD="NET_SPEED PULSE TOP TIME LIGHT BAT"
+TEMPLATE="${TEMPLATE}  <DATE>"
+LOAD="/home/rohnch/apps/pipestatus/modules/PIPESTATUS_" # Module path
+MODULES_TO_LOAD="NET_SPEED TOP DATE ALSA LIGHT"
 
-pipestatus "$TEMPLATE" --exec "sh $MODULE_PATH/load $MODULES_TO_LOAD" |  while read -r bar_info; do
+pipestatus i -f "$PIPESTATUS_PIPE" -t "$TEMPLATE" \
+        --exec "echo 'CMUS:' > $PIPESTATUS_PIPE & ${LOAD}TOP > $PIPESTATUS_PIPE & ${LOAD}NET_SPEED > $PIPESTATUS_PIPE  & ${LOAD}LIGHT > $PIPESTATUS_PIPE &
+                ${LOAD}ALSA > $PIPESTATUS_PIPE & ${LOAD}DATE > $PIPESTATUS_PIPE & ${LOAD}BAT > $PIPESTATUS_PIPE &" \
+        | while read -r bar_info; do
         xsetroot -name "$padding$bar_info"
 done
 
