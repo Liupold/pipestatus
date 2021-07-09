@@ -2,7 +2,7 @@
 sinks="$(pactl list sinks)"
 [ "${sinks#*Active Port:*-speaker}" != "$sinks" ] && echo "VOL_SYM:"
 [ "${sinks#*Active Port:*-headphone}" != "$sinks" ]  && echo "VOL_SYM:"
-vol="${sinks%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
+vol="${sinks#*availability unknown)}"; vol="${vol%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
 pactl subscribe | while read -r event; do
         [ "${event#*client}" != "$event" ] && continue
         sinks="$(pactl list sinks)"
@@ -11,6 +11,6 @@ pactl subscribe | while read -r event; do
                 [ "${sinks#*Active Port:*-headphone}" != "$sinks" ] && echo "VOL_SYM:"
         }
         [ "${event#*Event \'change\' on sink}" != "$event" ] && {
-                vol="${sinks#*RUNNING}"; vol="${vol%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
+                vol="${sinks#*availability unknown)}"; vol="${vol%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
         }
 done
