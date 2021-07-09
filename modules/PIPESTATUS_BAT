@@ -18,6 +18,7 @@ bat_status(){
 
 bat_status; echo "BAT:${bat_info# }"
 while true; do
-        inotifywait -e OPEN /sys/class/power_supply/*?/energy_now 2>/dev/null
+        # inotifywait -e OPEN /sys/class/power_supply/*?/energy_now 2>/dev/null
+        sleep 1m
         bat_status; echo "BAT:${bat_info# }"
 done

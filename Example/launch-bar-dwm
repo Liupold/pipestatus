@@ -9,7 +9,7 @@ MODULES_TO_LOAD="NET_SPEED TOP DATE ALSA LIGHT"
 
 pipestatus -f "$PIPESTATUS_PIPE" -t "$TEMPLATE" \
         --exec "echo 'CMUS:' > $PIPESTATUS_PIPE & ${LOAD}TOP > $PIPESTATUS_PIPE & ${LOAD}NET_SPEED > $PIPESTATUS_PIPE  & ${LOAD}LIGHT > $PIPESTATUS_PIPE &
-                ${LOAD}ALSA > $PIPESTATUS_PIPE & ${LOAD}DATE > $PIPESTATUS_PIPE & ${LOAD}BAT > $PIPESTATUS_PIPE &" \
+                ${LOAD}PULSE > $PIPESTATUS_PIPE & ${LOAD}DATE > $PIPESTATUS_PIPE & ${LOAD}BAT > $PIPESTATUS_PIPE &" \
         | while read -r bar_info; do
         xsetroot -name "$padding$bar_info"
 done

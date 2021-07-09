@@ -10,7 +10,7 @@ pactl subscribe | while read -r event; do
                 [ "${sinks#*Active Port:*-speaker}" != "$sinks" ] && echo "VOL_SYM:"
                 [ "${sinks#*Active Port:*-headphone}" != "$sinks" ] && echo "VOL_SYM:"
         }
-        [ "${event#*Event \'change\' on sink #0}" != "$event" ] && {
-                vol="${sinks%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
+        [ "${event#*Event \'change\' on sink}" != "$event" ] && {
+                vol="${sinks#*RUNNING}"; vol="${vol%%%*}"; vol="${vol##* }"; echo "VOL:$vol"
         }
 done
