@@ -1,5 +1,0 @@
-#!/bin/sh
-echo "PLAYERCTL_CMUS:"
-playerctl -p cmus -F metadata --format ' {{title}} [{{duration(position)}}|{{duration(mpris:length)}}]' | while read -r data; do
-        echo "PLAYERCTL_CMUS:$data"
-done

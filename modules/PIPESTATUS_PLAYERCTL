@@ -1,5 +1,8 @@
 #!/bin/sh
 echo "PLAYERCTL:"
- playerctl -i chromium,kdeconnect.mpris -F metadata --format '{{playerName}}: {{title}} [{{duration(position)}}/{{duration(mpris:length)}}]' | while read -r data; do
-        echo "PLAYERCTL:$data"
+playerctl -p cmus,%any -i chromium -F metadata -f 'PLAYERCTL:{{status}}: {{title}} ({{artist}})' &
+
+playerctl -F status | while read -r status; do
+        [ "$status" = 'Playing' ] && \
+        playerctl metadata -f 'PLAYERCTL:{{status}}: {{title}} ({{artist}})'
 done
