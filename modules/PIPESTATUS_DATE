@@ -1,5 +1,7 @@
 #!/bin/sh
-while true; do
-        date "+DATE:%d-%b(%a):%H:%M"
-        sleep $(( 60 - $(date +%S) ))
-done
+ps_DATE() {
+  while true; do
+    date "+DATE:%d-%b(%a):%H:%M"
+    sleep $(( 60 - $(date +%S) ))
+  done
+}

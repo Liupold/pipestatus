@@ -1,14 +1,16 @@
 #!/bin/sh
-top -b -d 3 -E g -u "$USER" | while read -r top_line;
-do
-        [ "${top_line# }" != "$top_line" ] && continue
-        if [ "${top_line#%Cpu(s)}" != "$top_line" ]; then
-                cpu_per="${top_line%%.* us,*}"; cpu_per="${cpu_per#%Cpu(s):}"
-                [ "$cpu_prev" != "$cpu_per" ] && \
-                        cpu_prev="$cpu_per" && echo "CPU:${cpu_per##* }%"
-        elif [ "${top_line#GiB Mem}" != "$top_line" ]; then
-                mem="${top_line##*free,}"; mem="${mem%% used,*}"
-                [ "$mem_prev" != "$mem" ] && \
-                        mem_prev="$mem" && echo "MEM:${mem##* }G"
-        fi
-done
+ps_TOP() {
+  top -b -d 3 -E g -u "$USER" | while read -r top_line;
+  do
+          [ "${top_line# }" != "$top_line" ] && continue
+          if [ "${top_line#%Cpu(s)}" != "$top_line" ]; then
+                  cpu_per="${top_line%%.* us,*}"; cpu_per="${cpu_per#%Cpu(s):}"
+                  [ "$cpu_prev" != "$cpu_per" ] && \
+                          cpu_prev="$cpu_per" && echo "CPU:${cpu_per##* }%"
+          elif [ "${top_line#GiB Mem}" != "$top_line" ]; then
+                  mem="${top_line##*free,}"; mem="${mem%% used,*}"
+                  [ "$mem_prev" != "$mem" ] && \
+                          mem_prev="$mem" && echo "MEM:${mem##* }G"
+          fi
+  done
+}

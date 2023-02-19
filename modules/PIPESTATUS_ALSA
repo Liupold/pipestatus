@@ -1,9 +1,11 @@
 #!/bin/sh
-tmp="$(amixer sget Master)" && tmp=${tmp#*\[} && echo "VOL:${tmp%%\]*}"
-echo "VOL_SYM:"
-stdbuf -oL alsactl monitor | while read -r event; do
-        [ "$event" != "${event#*Volume}" ] && \
-                tmp="$(amixer sget Master)" && tmp=${tmp#*\[} && echo "VOL:${tmp%%\]*}"
-        [ "${event#*Speaker Playback Switch}" != "$event" ] && echo "VOL_SYM:"
-        [ "${event#*Headphone Playback Switch}" != "$event" ] && echo "VOL_SYM:"
-done
+ps_ALSA() {
+  echo "VOL:$(pactl get-sink-volume @DEFAULT_SINK@ | grep -Eo '[0-9]+%' | paste -sd'|')"
+  echo "VOL_SYM:"
+  stdbuf -oL alsactl monitor | while read -r event; do
+          [ "$event" != "${event#*Volume}" ] && \
+            echo "VOL:$(pactl get-sink-volume @DEFAULT_SINK@ | grep -Eo '[0-9]+%' | paste -sd'|')"
+          [ "${event#*Speaker Playback Switch}" != "$event" ] && echo "VOL_SYM:"
+          [ "${event#*Headphone Playback Switch}" != "$event" ] && echo "VOL_SYM:"
+  done
+}

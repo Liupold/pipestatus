@@ -1,8 +1,8 @@
 #!/bin/sh
-echo "PLAYERCTL:"
-playerctl -p cmus,%any -i chromium -F metadata -f 'PLAYERCTL:{{status}}: {{title}} ({{artist}})' &
 
-playerctl -F status | while read -r status; do
-        [ "$status" = 'Playing' ] && \
-        playerctl metadata -f 'PLAYERCTL:{{status}}: {{title}} ({{artist}})'
-done
+ps_PLAYERCTL() {
+  echo "PLAYERCTL:"
+  playerctl -p cmus,%any -i chromium -F metadata -f '[ {{emoji(status)}} {{trunc(title,30)}} ({{trunc(artist, 20)}}) ]' | while read -r data; do
+    echo "PLAYERCTL:$data"
+  done
+}
