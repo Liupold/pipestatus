@@ -27,7 +27,7 @@ ps_NET_SPEED() {
   delta=1
   prev_dl="$(sum_of "rx_bytes")"
   prev_up="$(sum_of "tx_bytes")"
-  echo "NET_SPEED: 0 kB/s  0 kB/s"
+  echo "NET_SPEED:⬇️ 0 kB/s ⬆️ 0 kB/s"
 
   is_zero=""
   while true; do
@@ -37,10 +37,10 @@ ps_NET_SPEED() {
           dl_speed="$(( (now_dl - prev_dl) / delta ))"
           up_speed="$(( (now_up - prev_up) / delta ))"
           [ "$(( dl_speed + up_speed ))" -lt 1024 ] && {
-                  [ -z "$is_zero" ] && echo "NET_SPEED: 0 kB/s  0 kB/s" && is_zero=1
+                  [ -z "$is_zero" ] && echo "NET_SPEED:⬇️ 0 kB/s ⬆️ 0 kB/s" && is_zero=1
                   continue
           }
           prev_dl="$now_dl"; prev_up="$now_up"; unset is_zero
-          echo "NET_SPEED: $(print_bytes $dl_speed)  $(print_bytes $up_speed)"
+          echo "NET_SPEED:⬇️ $(print_bytes $dl_speed) ⬆️ $(print_bytes $up_speed)"
   done
 }
